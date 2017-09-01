@@ -103,9 +103,10 @@ int main (){
   /*==============================================================================================*/
   
   // Create the file to write
-  FILE  *f;
-  // this one for writting output                                                                  
-  f = fopen("output.txt", "w");
+  
+  FILE  *f;                                                                                        
+  f = fopen("output.txt", "w");   // this one for writting output --> this can be given as input
+  
   if (f == NULL)
     {
       printf("Error opening writting file!\n");
@@ -113,39 +114,49 @@ int main (){
     }
 
 
-  double *S = (double *)malloc(K*sizeof(double));
-  double *B = (double *)malloc(K*sizeof(double));
+  // Creating a row of the matrix
+  double *S = (double *)malloc(K*sizeof(double)); // a row of the thetas (size K) 
+  double *B = (double *)malloc(K*sizeof(double)); // a row of the betas  (size K)
 
   int theta_index = 0, beta_index = 0;
   double p; double bino_dis;
   clock_t t;
+  
   t = clock();
+  //=======================================================================================
+  // this is the part to parallelize with OpenMP
+  // Essentially for each individual we will do a matrix-vector to get a vector of
+  // probabilities (remove the cblas_ddot and do the right mv operation). We don't need
+  // to have the second for loop. The probability vector will be distributed to the threads
+  // and we are going to do each sampling (from the binomial distribution with probability p_i)
+  // in parallel. -- I am not sure about all these indexes -- If you prefer you can make it as
+  // a function in utilities.cpp and just call it from here.
+  //=======================================================================================
+  
   for(int i=0;i<I;i++){
 
-    memcpy(S,&theta[theta_index], K*sizeof(double) );
-    p = 0.0;
+    memcpy(S,&theta[theta_index], K*sizeof(double) ); // get the row of thetas
+    //p=0.0; // I think this is unessary. 
 
     for(int j=0;j<L;j++){
 
-      memcpy(B,&B_kl[beta_index], K*sizeof(double) );
+      memcpy(B,&B_kl[beta_index], K*sizeof(double) ); // get the row of betas
       p = cblas_ddot(K, S, 1, B, 1);
 
       //bino_dis.param(BinomialDist::param_type(2,p));
 
-      bino_dis=gen_from_binomial(2, p);
+      bino_dis=gen_from_binomial(2, p); 
       //print to output file                                                           
       fprintf(f,"%d ",((int)bino_dis+1));
       //cout << "Bino_dis+1 = " << (int)bino_dis+1 << endl;
 
       //printf("prob is %f \n",p);                                                     
       //printf("number is %d\n",temp[j]);                                              
-      p = 0.0;
+      // = 0.0;
       beta_index = beta_index + 1;
       //if(j==1) break;                                                                
     
     }
-
-    
     beta_index = 0;
     theta_index = theta_index + K;
     fprintf(f,"\r\n");
