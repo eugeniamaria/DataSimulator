@@ -10,12 +10,14 @@
 #include <boost/random/beta_distribution.hpp>
 #include <boost/random.hpp>
 #include <boost/random/variate_generator.hpp>
+#include <omp.h>
 #include <gsl/gsl_rng.h>
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_blas.h>
 
 using namespace std;
-
+extern gsl_rng** threadvec;
+void InitializeThread();
 void printBlock(double *dbuffer,size_t bufferlength);
 size_t ReadFiles(vector<double> & values, ifstream & filename);
 void ComputeBetas(double *B_kl, size_t row, double fst, double freq, size_t K);

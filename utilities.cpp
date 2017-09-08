@@ -1,5 +1,6 @@
 #include "utilities.hpp"
 using namespace std;
+	gsl_rng ** threadvec = new gsl_rng*[omp_get_max_threads()];
 
 /*===================================================================================*/
 /* This computes the betas                                                           */
@@ -20,14 +21,14 @@ void ComputeBetas(double *B_kl, size_t row, double fst, double freq, size_t K){
   }
   else{
     parameter1 = freq*(1-fst)/fst;
-    cout << "Parameter 1 for row (" << row+1 << "): " << parameter1 << endl;
+    //cout << "Parameter 1 for row (" << row+1 << "): " << parameter1 << endl;
     parameter2 = (1-freq)*(1-fst)/fst;
-    cout << "Parameter 2 for row (" << row+1 << "): " << parameter2 << endl;
+    //cout << "Parameter 2 for row (" << row+1 << "): " << parameter2 << endl;
 
     for (j=0; j<K; j++){
       do{
 	B_kl[j+K*row] = gen_from_beta(parameter1,parameter2);
-	cout << "B_kl(" << j+K*row << ")=" << B_kl[j+K*row]<< endl;
+	//cout << "B_kl(" << j+K*row << ")=" << B_kl[j+K*row]<< endl;
       }
       while(B_kl[j+K*row]<=0.05 || B_kl[j+K*row]>=0.95); // redraw if B_kl is less than 0.05 or more than 0.95
     }
@@ -182,8 +183,20 @@ void printBlock(double *dbuffer,size_t bufferlength)
   cout << endl;
   cout << "The length " << bufferlength << endl; 
 }
-
-
+/*===================================================================================*/
+/* Initialize Threading		                                                         */
+/*===================================================================================*/
+void InitializeThread(){
+	
+	gsl_rng_env_setup();	
+	for (int b = 0; b < omp_get_max_threads(); b++){
+		threadvec[b] = gsl_rng_alloc(gsl_rng_taus);
+		gsl_rng_set(threadvec[b],b*clock());
+	}
+	
+	std::cout << "number of threads : " << omp_get_max_threads() << std::endl;
+	
+}
 /*===================================================================================*/
 /*Random Number Generator from Beta Distribution--Using BOOST C++ Library            */
 /*===================================================================================*/
@@ -212,7 +225,7 @@ double gen_from_beta(double param1, double param2)
 /*===================================================================================*/
 double gen_from_binomial(double param1, double param2)
 {
-  using namespace boost::random;
+ /* using namespace boost::random;
 
   // construct the distribution                                                                         
   using boost::random::binomial_distribution;
@@ -225,7 +238,8 @@ double gen_from_binomial(double param1, double param2)
 
   // generate random values                                                                             
   double r = generator();
-  return r;
+  return r;*/
+  return gsl_ran_binomial(threadvec[omp_get_thread_num()], param2, (unsigned int)param1); 
 }
 
 
@@ -288,4 +302,5 @@ void normprob(size_t rows , size_t cols, double *A, double *sums)
       A[i*cols+j] = temps/sums[i];
   }
   
+}
 }

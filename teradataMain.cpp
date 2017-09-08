@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <cstdlib>
 #include <string>
+#include <omp.h>
 #include <boost/random/random_device.hpp>
 #include "normal.hpp"
 #include <boost/random/beta_distribution.hpp>
@@ -21,10 +22,10 @@ int main (){
   
   size_t K  =    6; // Number of populations
   size_t Ns =    5; // Number of points/regions drawn from K-Simplex using dirichlet
-  size_t I  =   10; // Number of individuals -- N  
-  size_t L  =  100; // Number of SNP locations -- M
+  size_t I  =   1000; // Number of individuals -- N  
+  size_t L  =  50000; // Number of SNP locations -- M
   double MN = 1e-6; // Minimum frequency
-  
+ 
   /*==============================================================================================*/
   /* Read files fst and freq                                                                      */
   /*==============================================================================================*/
@@ -58,7 +59,7 @@ int main (){
   fst.close();
   freq.close();
   
-
+	InitializeThread();
   /*==============================================================================================*/
   /* Betas computation                                                                            */
   /*==============================================================================================*/
@@ -105,7 +106,7 @@ int main (){
   // Create the file to write
   
   FILE  *f;                                                                                        
-  f = fopen("output.txt", "w");   // this one for writting output --> this can be given as input
+  f = fopen("output.txt", "w+");   // this one for writting output --> this can be given as input
   
   if (f == NULL)
     {
@@ -120,9 +121,9 @@ int main (){
 
   int theta_index = 0, beta_index = 0;
   double p; double bino_dis;
-  clock_t t;
-  
-  t = clock();
+  clock_t bt;
+   bt = omp_get_wtime();
+  //t = clock();
   //=======================================================================================
   // this is the part to parallelize with OpenMP
   // Essentially for each individual we will do a matrix-vector to get a vector of
@@ -137,7 +138,7 @@ int main (){
 
     memcpy(S,&theta[theta_index], K*sizeof(double) ); // get the row of thetas
     //p=0.0; // I think this is unessary. 
-
+	#pragma omp parallel for
     for(int j=0;j<L;j++){
 
       memcpy(B,&B_kl[beta_index], K*sizeof(double) ); // get the row of betas
@@ -160,12 +161,13 @@ int main (){
     beta_index = 0;
     theta_index = theta_index + K;
     fprintf(f,"\r\n");
+	std::cout << std::endl << "Done with Population # " << i << std::endl;
     //if(i==0)break;
-    break;
+    //break;
   }
   fclose(f);
-  t = clock() - t;
-  double time_taken = ((double)t)/CLOCKS_PER_SEC; // in seconds                                          
+  clock_t et = omp_get_wtime();
+  double time_taken = ((double)(et-bt));// in seconds                                          
   printf("it took %f seconds to execute \n", time_taken);
 
  
