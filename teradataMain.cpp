@@ -18,14 +18,27 @@
 
 using namespace std;
 
-int main (){
-  
-  size_t K  =    6; // Number of populations
-  size_t Ns =    5; // Number of points/regions drawn from K-Simplex using dirichlet
-  size_t I  =   1000; // Number of individuals -- N  
-  size_t L  =  50000; // Number of SNP locations -- M
-  double MN = 1e-6; // Minimum frequency
- 
+int main(int argc, char** argv)
+{
+	size_t K; // Number of populations
+	size_t Ns; // Number of points/regions drawn from K-Simplex using dirichlet
+	size_t I; // Number of individuals -- N
+	size_t L; // Number of SNP locations -- M
+	double MN; // Minimum frequency
+
+	sscanf(argv[1],"%zd",&K);
+	sscanf(argv[2],"%zd",&Ns);
+	sscanf(argv[3],"%zd",&I);
+	sscanf(argv[4],"%zd",&L);
+	sscanf(argv[5],"%lf",&MN);
+
+  /*
+	size_t K  =    6; // Number of populations
+	size_t Ns =    5; // Number of points/regions drawn from K-Simplex using dirichlet
+	size_t I  =   1000; // Number of individuals -- N  
+	size_t L  =  50000; // Number of SNP locations -- M
+	double MN = 1e-6; // Minimum frequency
+	*/
   /*==============================================================================================*/
   /* Read files fst and freq                                                                      */
   /*==============================================================================================*/
@@ -177,3 +190,4 @@ int main (){
   return 0;
 }
 
+© 2017 GitHub, Inc.
