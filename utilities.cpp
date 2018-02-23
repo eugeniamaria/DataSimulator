@@ -95,7 +95,7 @@ void ComputeThetasA(double *TB_kn, double alpha, double gamma, double MN, size_t
       TB_knt[i*probIsize+l] = res2[l]; 
     }
   }
-  
+  /*
   // Print the results
   for (i=0; i<I; i++){
     cout << "Individual:" << i << endl;
@@ -106,7 +106,7 @@ void ComputeThetasA(double *TB_kn, double alpha, double gamma, double MN, size_t
     }
     cout << "Sum = " << sumi << endl;
     }
-    
+    */
   delete[] res;
   delete[] temp;
   delete[] A_ns;
