@@ -20,6 +20,7 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
+	
 	size_t K; // Number of populations
 	size_t Ns; // Number of points/regions drawn from K-Simplex using dirichlet
 	size_t I; // Number of individuals -- N
@@ -31,14 +32,15 @@ int main(int argc, char** argv)
 	sscanf(argv[3],"%zd",&I);
 	sscanf(argv[4],"%zd",&L);
 	sscanf(argv[5],"%lf",&MN);
-
-  /*
+	
+	/*
 	size_t K  =    6; // Number of populations
 	size_t Ns =    5; // Number of points/regions drawn from K-Simplex using dirichlet
 	size_t I  =   1000; // Number of individuals -- N  
-	size_t L  =  50000; // Number of SNP locations -- M
+	size_t L  =  10; // Number of SNP locations -- M
 	double MN = 1e-6; // Minimum frequency
 	*/
+	int padding = (int) log10 ((double) I) + 1;
   /*==============================================================================================*/
   /* Read files fst and freq                                                                      */
   /*==============================================================================================*/
@@ -133,7 +135,7 @@ int main(int argc, char** argv)
   double *B = (double *)malloc(K*sizeof(double)); // a row of the betas  (size K)
 
   int theta_index = 0, beta_index = 0;
-  double p; double bino_dis;
+  double p; double bino_dis; int int_bino_dis;
   clock_t bt;
    bt = omp_get_wtime();
   //t = clock();
@@ -148,7 +150,7 @@ int main(int argc, char** argv)
   //=======================================================================================
   
   for(int i=0;i<I;i++){
-
+	fprintf(f,"FAM%0*d ID%0*d %d %d %d %d ",padding,i+1,padding,i+1,0,0,0,0); //dummy values for the first 6 coloumns
     memcpy(S,&theta[theta_index], K*sizeof(double) ); // get the row of thetas
     //p=0.0; // I think this is unessary. 
 	#pragma omp parallel for
@@ -159,24 +161,33 @@ int main(int argc, char** argv)
 
       //bino_dis.param(BinomialDist::param_type(2,p));
 
-      bino_dis=gen_from_binomial(2, p); 
-      //print to output file                                                           
-      fprintf(f,"%d ",((int)bino_dis+1));
-      //cout << "Bino_dis+1 = " << (int)bino_dis+1 << endl;
+      bino_dis = gen_from_binomial(2, p); //picks 0, 1 or 2
+	  
 
-      //printf("prob is %f \n",p);                                                     
-      //printf("number is %d\n",temp[j]);                                              
-      // = 0.0;
+	  int_bino_dis = (int)bino_dis;
+
+	  
+	  if (int_bino_dis == 2)
+		  fprintf(f,"%d %d ",1,1);
+	  else if(int_bino_dis == 1) 
+		  fprintf(f,"%d %d ",1,2);
+	  else if(int_bino_dis == 0)
+		  fprintf(f,"%d %d ",2,2);
+	  else{
+		cout<<"unexpected sampled value\n"<<endl;
+		//return -1;
+	  }
+
+      //print to output file                                                           
+      // fprintf(f,"%d ",((int)bino_dis+1));
+
       beta_index = beta_index + 1;
-      //if(j==1) break;                                                                
-    
+                                                                   
     }
     beta_index = 0;
     theta_index = theta_index + K;
     fprintf(f,"\r\n");
-	std::cout << std::endl << "Done with Population # " << i << std::endl;
-    //if(i==0)break;
-    //break;
+
   }
   fclose(f);
   clock_t et = omp_get_wtime();
@@ -189,5 +200,3 @@ int main(int argc, char** argv)
   
   return 0;
 }
-
-© 2017 GitHub, Inc.
