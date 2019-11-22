@@ -29,6 +29,7 @@ Include the paths to the above libraries in the first two lines of the Makefile.
 
 # Limiting threads
 Depending on your system before executing do :
+
   export OMP_NUM_THREADS=(num_threads)
   
   or
