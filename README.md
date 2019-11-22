@@ -36,3 +36,5 @@ Depending on your system before executing do :
   
   set OMP_NUM_THREADS=(num_threads)
  
+ # Contributors
+This code was contributed by Eugenia Kontopoulou (ekontopo_at_purdue_dot_edu), Mai Elkady (melkady_at_purdue_dot_edu), Aritra Bose (bose6_at_purdue_dot_edu).
