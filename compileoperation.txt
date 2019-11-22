@@ -1,1 +1,0 @@
-g++ -I/apps/rhel6/boost/1.60.0_intel-16.0.1.150/include -L/apps/rhel6/boost/1.60.0_intel-16.0.1.150/lib -Xlinker -rpath -Xlinker /apps/rhel6/boost/1.60.0_intel-16.0.1.150/lib -o simulatortest teradataMain.cpp utilities.cpp -lboost_math_c99 -lboost_random -lgsl -lgslcblas -lm -fopenmp
