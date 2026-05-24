@@ -29,7 +29,7 @@ print-%: ; @echo $* = $($*)
 
 
 GeneticDataSimulator: $(OBJ)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) $(LINKLIBS) $(LIBS) $(OBJ) -o GeneticDataSimulator 
+	$(CXX) $(CXXFLAGS) $(INCLUDES) $(LINKLIBS) $(OBJ) $(LIBS) -o GeneticDataSimulator
 
 teradataMain.o: teradataMain.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) $(LINKLIBS) $(LIBS) -c teradataMain.cpp
@@ -39,4 +39,3 @@ utilities.o: utilities.cpp
 
 clean:	
 	rm -f *.o *~ output
-
