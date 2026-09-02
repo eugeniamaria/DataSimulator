@@ -55,10 +55,10 @@ int main(int argc, char** argv)
     return 0;
   }
  
-  flag_K      = findarg("npop",INT, &K, argc, argv);          if (!flag_K){K = 6;}
-  flag_Ns     = findarg("nregions", INT, &Ns, argc, argv);    if (!flag_Ns){Ns = 5;}
-  flag_I      = findarg("nindividuals", INT, &I, argc, argv); if (!flag_I){I = 100;}
-  flag_L      = findarg("nSNP", INT, &L, argc, argv);         if (!flag_L){L = 10;}
+  flag_K = findarg("npop", SIZE_T, &K, argc, argv);         if (!flag_K){K = 6;}
+  flag_Ns = findarg("nregions", SIZE_T, &Ns, argc, argv);    if (!flag_Ns){Ns = 5;}
+  flag_I = findarg("nindividuals", SIZE_T, &I, argc, argv); if (!flag_I){I = 100;}
+  flag_L = findarg("nSNP", SIZE_T, &L, argc, argv);         if (!flag_L){L = 10;}
   flag_MN     = findarg("minfreq", DOUBLE, &MN, argc, argv);  if (!flag_MN){MN = 1e-6;}
   flag_option = findarg("txtoutput",INT, &option, argc, argv);if (!flag_option){option = 0;}
   flag_fname  = findarg("filename",STR, fname, argc, argv);   
