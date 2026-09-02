@@ -23,6 +23,7 @@ typedef enum {
   INT,
   DOUBLE,
   STR,
+  SIZE_T,
   NA
 } ARG_TYPE;
 
